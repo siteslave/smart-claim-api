@@ -12,7 +12,6 @@ const jwt = new jwt_1.Jwt();
 const index_1 = require("./routes/index");
 const admin_1 = require("./routes/admin");
 const login_1 = require("./routes/login");
-const users_1 = require("./routes/users");
 const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -62,7 +61,6 @@ let adminAuth = (req, res, next) => {
     else {
         token = req.body.token;
     }
-    console.log(req.headers);
     jwt.verify(token)
         .then((decoded) => {
         if (decoded.userType == '1') {
@@ -83,7 +81,6 @@ let adminAuth = (req, res, next) => {
 };
 app.use('/login', login_1.default);
 app.use('/admin', adminAuth, admin_1.default);
-app.use('/users', userAuth, users_1.default);
 app.use('/', index_1.default);
 app.use((req, res, next) => {
     var err = new Error('Not Found');

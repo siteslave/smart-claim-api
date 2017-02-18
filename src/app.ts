@@ -16,7 +16,6 @@ const jwt = new Jwt();
 import indexRoute from './routes/index';
 import adminRoute from './routes/admin';
 import loginRoute from './routes/login';
-import usersRoute from './routes/users';
 
 const app: express.Express = express();
 
@@ -74,7 +73,7 @@ let adminAuth = (req, res, next) => {
     token = req.body.token;
   }
 
-  console.log(req.headers);
+  // console.log(req.headers);
   
   jwt.verify(token)
     .then((decoded: any) => {
@@ -96,7 +95,6 @@ let adminAuth = (req, res, next) => {
 
 app.use('/login', loginRoute);
 app.use('/admin', adminAuth, adminRoute);
-app.use('/users', userAuth, usersRoute);
 app.use('/', indexRoute);
 
 //catch 404 and forward to error handler
