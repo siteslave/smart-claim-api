@@ -5,3 +5,5 @@ npm-debug.log
 .git/*
 bower_components/*
 .env
+uploads
+app/*
