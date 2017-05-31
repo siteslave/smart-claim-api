@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as moment from 'moment';
 import * as fse from 'fs-extra';
+import * as rimraf from 'rimraf';
 
 import { IZipEntry } from 'adm-zip';
 import { unitOfTime } from 'moment';
@@ -49,51 +50,127 @@ router.post('/upload', upload.single('files'), (req, res, next) => {
   const fileName = req.file.originalname;
   const fileType = req.body.fileType;
   const db = req.db;
-  console.log(req.body);
-  console.log(req.files);
-  
+
   if (filePath) {
     if (fileType === '1') {
-      importor.doImportF16(db, filePath)
-        .then(() => {
-          let username = req.decoded.username;
-          let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
-          let data = {
-            filename: fileName,
-            filetype: fileType,
-            username: username,
-            uploaded_at: uploaded_at
-          };
-          return importor.saveLogs(db, data);
-        })
-        .then(() => {
-          res.send({ ok: true });
-        })
-        .catch(err => {
-          console.log(err);
-          res.send({ ok: false, error: err });
-        })
+      // ECLAIM_11053_20170428143716.zip
+      let chkFile = fileName.split('_');
+      let isZip = path.extname(fileName).toLowerCase() === '.zip';
+      if (chkFile[0].toUpperCase() === 'ECLAIM' && chkFile[0] === '11053' && isZip) {
+        importor.doImportF16(db, filePath)
+          .then(() => {
+            let username = req.decoded.username;
+            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
+            let data = {
+              filename: fileName,
+              filetype: fileType,
+              username: username,
+              uploaded_at: uploaded_at
+            };
+            return importor.saveLogs(db, data);
+          })
+          .then(() => {
+            rimraf.sync(filePath);
+            res.send({ ok: true });
+          })
+          .catch(err => {
+            console.log(err);
+            res.send({ ok: false, error: err });
+          })
+      } else {
+        res.send({ ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง' });
+      }
     } else if (fileType === '2') { // UC REP
       // rep eclaim
-      importor.doImportUCREPExcel(db, filePath)
-        .then(() => {
-          let username = req.decoded.username;
-          let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
-          let data = {
-            filename: fileName,
-            filetype: fileType,
-            username: username,
-            uploaded_at: uploaded_at
-          };
-          return importor.saveLogs(db, data);
-        })
-        .then(() => {
-          res.send({ ok: true });
-        })
-        .catch(error => {
-          console.log(error);
-          res.send({ ok: false, error: error });
-        });
+      // eclaim_11053_IP_25600501_114105759
+      // eclaim_11053_OP_25600501_155047723
+      let chkFile = fileName.split('_');
+      let isExcel = path.extname(fileName).toLowerCase() === '.xls' || path.extname(fileName).toLowerCase() === '.xlsx';
+      if (chkFile[0].toUpperCase() === 'ECLAIM' && chkFile[1] === '11053' && (chkFile[2].toUpperCase() === 'IP' || chkFile[2].toUpperCase() === 'OP') && isExcel) {
+        importor.doImportUCREPExcel(db, filePath)
+          .then(() => {
+            let username = req.decoded.username;
+            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
+            let data = {
+              filename: fileName,
+              filetype: fileType,
+              username: username,
+              uploaded_at: uploaded_at
+            };
+            return importor.saveLogs(db, data);
+          })
+          .then(() => {
+            rimraf.sync(filePath);
+            res.send({ ok: true });
+          })
+          .catch(error => {
+            console.log(error);
+            res.send({ ok: false, error: error });
+          });
+
+      } else {
+        res.send({ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง'})
+      }
+    } else if (fileType === '3') { // OFC REP
+      // rep eclaim
+      // check file format 
+      // eclaim_11053_IPCS_25600504_102019838 => IPD
+      // eclaim_11053_OPCS_25600505_092457910 => OPD
+      let chkFile = fileName.split('_');
+      let isExcel = path.extname(fileName).toLowerCase() === '.xls' || path.extname(fileName).toLowerCase() === '.xlsx';
+      console.log(isExcel);
+      console.log(chkFile);
+      if (chkFile[0].toUpperCase() === 'ECLAIM' && chkFile[1] === '11053' && (chkFile[2].toUpperCase() === 'IPCS' || chkFile[2].toUpperCase() === 'OPCS' || chkFile[2].toUpperCase() === 'IPLGO' || chkFile[2].toUpperCase() === 'OPLGO') && isExcel) {
+        importor.doImportOFCREPExcel(db, filePath)
+          .then(() => {
+            let username = req.decoded.username;
+            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
+            let data = {
+              filename: fileName,
+              filetype: fileType,
+              username: username,
+              uploaded_at: uploaded_at
+            };
+            return importor.saveLogs(db, data);
+          })
+          .then(() => {
+            rimraf.sync(filePath);
+            res.send({ ok: true });
+          })
+          .catch(error => {
+            console.log(error);
+            res.send({ ok: false, error: error });
+          });
+      } else {
+        res.send({ ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง' })
+      }
+    } else if (fileType === '4') { // SSS
+      let chkFile = fileName.split('_');
+      let isText = path.extname(fileName).toLowerCase() === '.zip';
+      if (chkFile[0] === '11053' && chkFile[1].toUpperCase() === 'SIGNREP' && isText) {
+        importor.doImportSSSREPText(db, filePath)
+          .then(() => {
+            let username = req.decoded.username;
+            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
+            let data = {
+              filename: fileName,
+              filetype: fileType,
+              username: username,
+              uploaded_at: uploaded_at
+            };
+            return importor.saveLogs(db, data);
+          })
+          .then(() => {
+            rimraf.sync(filePath);
+            res.send({ ok: true });
+          })
+          .catch(error => {
+            console.log(error);
+            res.send({ ok: false, error: error });
+          });
+      } else {
+        res.send({ ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง' })
+      }
     } else {
       res.send({ ok: false, error: 'กรุณาเลือกประเภทไฟล์ที่ต้องการอัปโหลด' })
     }

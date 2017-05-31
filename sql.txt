@@ -1,0 +1,253 @@
+
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495769', '0084125', '600001348', 'IP',
+          '2017-04-19', '16:00:00',
+          '2017-04-19', '17:15:00', 1149.5, 0, 0, 0, '-',
+          0, 'OFC', 'O3', '20004', 'IPCS,OTCS', '-',
+          1200.92, 0, '28539', 0.192, 0.192, 1149.5, 0,
+          1100.92, 0, 0, 0, 0, 100, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-19', time_serv='16:00:00', date_dch='2017-04-19', time_dch='17:15:00',
+          charge1=1149.5, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O3',
+          hmain='20004', com1=1200.92, com2=0,
+          drg='28539', rw=0.192, adjrw=0.192, reimbursement=1149.5,
+          none_reimbursement=0, ipcs=1100.92, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=100, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125496058', '0002456', '600001368', 'IP',
+          '2017-04-20', '21:15:00',
+          '2017-04-21', '11:00:00', 1831.5, 0, 0, 0, '-',
+          0, 'OFC', 'O3', '20004', 'IPCS,OTCS', '-',
+          3348.64, 0, '10560', 0.4096, 0.4096, 1831.5, 0,
+          2348.64, 0, 0, 0, 0, 1000, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-20', time_serv='21:15:00', date_dch='2017-04-21', time_dch='11:00:00',
+          charge1=1831.5, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O3',
+          hmain='20004', com1=3348.64, com2=0,
+          drg='10560', rw=0.4096, adjrw=0.4096, reimbursement=1831.5,
+          none_reimbursement=0, ipcs=2348.64, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=1000, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125496061', '0024631', '600001461', 'IP',
+          '2017-04-29', '11:39:00',
+          '2017-04-30', '10:00:00', 1938, 0, 0, 0, '-',
+          0, 'OFC', 'O4', '21002', 'IPCS,OTCS', '-',
+          2485.67, 0, '3530', 0.2591, 0.2591, 1938, 0,
+          1485.67, 0, 0, 0, 0, 1000, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-29', time_serv='11:39:00', date_dch='2017-04-30', time_dch='10:00:00',
+          charge1=1938, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O4',
+          hmain='21002', com1=2485.67, com2=0,
+          drg='3530', rw=0.2591, adjrw=0.2591, reimbursement=1938,
+          none_reimbursement=0, ipcs=1485.67, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=1000, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125496060', '0002438', '600001433', 'IP',
+          '2017-04-26', '11:19:00',
+          '2017-04-29', '12:00:00', 4925.5, 0, 0, 0, '-',
+          0, 'OFC', 'O4', '20004', 'IPCS,OTCS', '-',
+          4225.65, 0, '3510', 0.1998, 0.1998, 4925.5, 0,
+          1145.65, 0, 0, 0, 0, 3000, 0, 80)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-26', time_serv='11:19:00', date_dch='2017-04-29', time_dch='12:00:00',
+          charge1=4925.5, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O4',
+          hmain='20004', com1=4225.65, com2=0,
+          drg='3510', rw=0.1998, adjrw=0.1998, reimbursement=4925.5,
+          none_reimbursement=0, ipcs=1145.65, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=3000, fpnhso=0,
+          drug=80
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125496059', '0002262', '600001372', 'IP',
+          '2017-04-21', '09:06:00',
+          '2017-04-25', '11:00:00', 6198, 0, 0, 0, '-',
+          0, 'OFC', 'O4', '20004', 'IPCS,OTCS', '-',
+          7584.4, 0, '4553', 0.9515, 0.9515, 6198, 0,
+          5455.9, 0, 0, 0, 0, 1600, 0, 528.5)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-21', time_serv='09:06:00', date_dch='2017-04-25', time_dch='11:00:00',
+          charge1=6198, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O4',
+          hmain='20004', com1=7584.4, com2=0,
+          drg='4553', rw=0.9515, adjrw=0.9515, reimbursement=6198,
+          none_reimbursement=0, ipcs=5455.9, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=1600, fpnhso=0,
+          drug=528.5
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495777', '0010214', '600001360', 'IP',
+          '2017-04-20', '12:06:00',
+          '2017-04-22', '10:00:00', 3683.5, 0, 0, 0, '-',
+          0, 'OFC', 'O4', '21002', 'IPCS,OTCS', '-',
+          3283.26, 0, '6570', 0.2238, 0.2238, 3683.5, 0,
+          1283.26, 0, 0, 0, 0, 2000, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-20', time_serv='12:06:00', date_dch='2017-04-22', time_dch='10:00:00',
+          charge1=3683.5, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O4',
+          hmain='21002', com1=3283.26, com2=0,
+          drg='6570', rw=0.2238, adjrw=0.2238, reimbursement=3683.5,
+          none_reimbursement=0, ipcs=1283.26, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=2000, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495776', '0028269', '600001335', 'IP',
+          '2017-04-18', '14:38:00',
+          '2017-04-30', '10:00:00', 20507.5, 0, 0, 90, '-',
+          0, 'OFC', 'O4', '25007', 'IPCS,OTCS', '-',
+          18451.44, 0, '9500', 1.3344, 1.3344, 20417.5, 90,
+          7651.44, 0, 0, 0, 0, 10800, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-18', time_serv='14:38:00', date_dch='2017-04-30', time_dch='10:00:00',
+          charge1=20507.5, charge2=0, charge_total=0, pay=90,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O4',
+          hmain='25007', com1=18451.44, com2=0,
+          drg='9500', rw=1.3344, adjrw=1.3344, reimbursement=20417.5,
+          none_reimbursement=90, ipcs=7651.44, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=10800, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495775', '0016470', '600001274', 'IP',
+          '2017-04-14', '15:45:00',
+          '2017-04-16', '10:15:00', 3160.75, 0, 0, 0, '-',
+          0, 'OFC', 'O4', '25007', 'IPCS,OTCS', '-',
+          4860.81, 0, '10533', 0.7082, 0.7082, 3160.75, 0,
+          4060.81, 0, 0, 0, 0, 800, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-14', time_serv='15:45:00', date_dch='2017-04-16', time_dch='10:15:00',
+          charge1=3160.75, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O4',
+          hmain='25007', com1=4860.81, com2=0,
+          drg='10533', rw=0.7082, adjrw=0.7082, reimbursement=3160.75,
+          none_reimbursement=0, ipcs=4060.81, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=800, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495774', '0019156', '600001342', 'IP',
+          '2017-04-19', '09:38:00',
+          '2017-04-22', '11:00:00', 5852, 0, 0, 0, '-',
+          0, 'OFC', 'O4', '20004', 'IPCS,OTCS', '-',
+          6700.72, 0, '10563', 0.6454, 0.6454, 5852, 0,
+          3700.72, 0, 0, 0, 0, 3000, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-19', time_serv='09:38:00', date_dch='2017-04-22', time_dch='11:00:00',
+          charge1=5852, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O4',
+          hmain='20004', com1=6700.72, com2=0,
+          drg='10563', rw=0.6454, adjrw=0.6454, reimbursement=5852,
+          none_reimbursement=0, ipcs=3700.72, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=3000, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495773', '0060428', '600001278', 'IP',
+          '2017-04-14', '20:45:00',
+          '2017-04-16', '09:10:00', 3128, 0, 0, 0, '-',
+          0, 'OFC', 'O3', '20004', 'IPCS,OTCS', '-',
+          8468.65, 0, '11592', 1.3374, 1.3374, 3128, 0,
+          7668.65, 0, 0, 0, 0, 800, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-14', time_serv='20:45:00', date_dch='2017-04-16', time_dch='09:10:00',
+          charge1=3128, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O3',
+          hmain='20004', com1=8468.65, com2=0,
+          drg='11592', rw=1.3374, adjrw=1.3374, reimbursement=3128,
+          none_reimbursement=0, ipcs=7668.65, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=800, fpnhso=0,
+          drug=0
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495772', '0037092', '600001214', 'IP',
+          '2017-04-10', '10:04:00',
+          '2017-04-11', '10:00:00', 3747.5, 0, 0, 0, '-',
+          0, 'VOF', 'O5', '02004', 'IPCS,OTCS', '-',
+          5904.15, 0, '11501', 0.7759, 0.7216, 3747.5, 0,
+          4137.65, 0, 0, 0, 0, 1000, 0, 766.5)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-10', time_serv='10:04:00', date_dch='2017-04-11', time_dch='10:00:00',
+          charge1=3747.5, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='VOF', sub_inscl='O5',
+          hmain='02004', com1=5904.15, com2=0,
+          drg='11501', rw=0.7759, adjrw=0.7216, reimbursement=3747.5,
+          none_reimbursement=0, ipcs=4137.65, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=1000, fpnhso=0,
+          drug=766.5
+        ;
+          INSERT INTO eclaim_ofc
+          (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+          charge1, charge2, charge_total, pay, error_code, late_count, main_inscl, sub_inscl,
+          hmain, main_fund, type_claim, com1, com2, drg, rw, adjrw, reimbursement,
+          none_reimbursement, ipcs, ipcs_ors, opcs, pacs, instcs, otcs, fpnhso, drug)
+          VALUES('600500007', '125495771', '0009357', '600001197', 'IP',
+          '2017-04-09', '02:39:00',
+          '2017-04-12', '10:00:00', 7107.5, 0, 0, 0, '-',
+          0, 'OFC', 'O1', '20004', 'IPCS,OTCS', '-',
+          7933.52, 0, '11542', 0.686, 0.686, 7107.5, 0,
+          3933.52, 0, 0, 0, 0, 4000, 0, 0)
+          ON DUPLICATE KEY UPDATE
+          date_serv='2017-04-09', time_serv='02:39:00', date_dch='2017-04-12', time_dch='10:00:00',
+          charge1=7107.5, charge2=0, charge_total=0, pay=0,
+          error_code='-', late_count=0, main_inscl='OFC', sub_inscl='O1',
+          hmain='20004', com1=7933.52, com2=0,
+          drg='11542', rw=0.686, adjrw=0.686, reimbursement=7107.5,
+          none_reimbursement=0, ipcs=3933.52, ipcs_ors=0,
+          opcs=0, pacs=0, instcs=0, otcs=4000, fpnhso=0,
+          drug=0
+        
