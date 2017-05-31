@@ -1,0 +1,92 @@
+import xlsx from 'node-xlsx';
+import * as fs from 'fs';
+import * as moment from 'moment';
+import * as mysql from 'mysql';
+
+const pool = mysql.createPool({
+  connectionLimit: 10,
+  host: 'localhost',
+  user: 'root',
+  password: '043789124',
+  database: 'smart_claim',
+  multipleStatements: true
+});
+
+// var excelFile = './eclaim_11053_IP_25590229_164841647.xls';
+var excelFile = './sample/eclaim_11053_IP_25600305_094434726.xls';
+
+const workSheetsFromFile = xlsx.parse(fs.readFileSync(excelFile));
+let totalData = +workSheetsFromFile[1].data[5][3];
+let totalAccept = +workSheetsFromFile[1].data[5][4];
+
+let startRecord = 8;
+let stopRecord = startRecord + totalData;
+
+// console.log('Total: ', totalData);
+// console.log('Accept: ', totalAccept);
+let sqls = [];
+
+for (let _i = startRecord; _i < stopRecord; _i++) {
+  // console.log('----------------------------------')
+  let data = workSheetsFromFile[0].data[_i];
+  // console.log('REP ', data[0]);
+  // console.log('TRAN_ID ', data[2]);
+  // console.log('HN ', data[3]);
+  // console.log('AN ', data[4]);
+  // console.log('SERVICE_TYPE ', data[7]);
+
+  // console.log('SERV_DATE ', serveDate);
+  // console.log('SERV_TIME ', serveTime);
+  // console.log('DCH_DATE ', dchDate);
+  // console.log('DCH_TIME ', dchTime);
+  // console.log('CHARGE_NHSO ', data[10]);
+  // console.log('CHARGE_OTHER ', data[11]);
+  // console.log('ERROR_CODE ', data[13]);
+  // console.log('PS ', data[44]);
+  if (data) {
+    let repNo = data[0];
+    let tranId = data[2];
+    let hn = data[3];
+    let an = data[4];
+    let serviceType = data[7];
+    let serveDate = moment(data[8], 'DD/MM/YYYY HH:mm:ss').isValid() ? moment(data[8], 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD') : '0000-00-00';
+    let serveTime = moment(data[8], 'DD/MM/YYYY HH:mm:ss').isValid() ? moment(data[8], 'DD/MM/YYYY HH:mm:ss').format('HH:mm:ss') : '00:00:00';
+    let dchDate = moment(data[9], 'DD/MM/YYYY HH:mm:ss').isValid() ? moment(data[9], 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD') : '0000-00-00';
+    let dchTime = moment(data[9], 'DD/MM/YYYY HH:mm:ss').isValid() ? moment(data[9], 'DD/MM/YYYY HH:mm:ss').format('HH:mm:ss') : '00:00:00';
+    let chargeNhso = parseFloat(data[10]) || 0;
+    let chargeOther = parseFloat(data[11]) || 0;
+    let errorCode = data[13];
+    let mainInscl = data[21];
+    let subInscl = data[22];
+    let lateCount = +data[44];
+
+    let sql = `
+        INSERT INTO eclaim_data
+      (rep_no, tran_id, hn, an, service_type, date_serv, time_serv, date_dch, time_dch,
+      charge_nhso, charge_other, error_code, late_count, main_inscl, sub_inscl)
+      VALUES('${repNo}', '${tranId}', '${hn}', '${an}', '${serviceType}', 
+      '${serveDate}', '${serveTime}', 
+      '${dchDate}', '${dchTime}', ${chargeNhso}, ${chargeOther}, '${errorCode}', 
+      ${lateCount}, '${mainInscl}', '${subInscl}')
+      ON DUPLICATE KEY UPDATE
+      date_serv='${serveDate}', time_serv='${serveTime}', date_dch='${dchDate}', time_dch='${dchTime}', 
+      charge_nhso=${chargeNhso}, charge_other=${chargeOther},
+      error_code='${errorCode}', late_count=${lateCount}, main_inscl='${mainInscl}', sub_inscl='${subInscl}'
+  `;
+
+    sqls.push(sql);  
+
+    // console.log(sql);  
+  }
+
+}
+
+let queries = sqls.join(';');
+
+pool.getConnection((err, connection) => {
+  connection.query(queries, [], (err, result) => {
+    if (err) console.log(err);
+    else console.log('Success');
+  });
+
+});

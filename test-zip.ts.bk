@@ -1,0 +1,97 @@
+import * as AdmZip from 'adm-zip';
+import { IZipEntry } from 'adm-zip';
+import * as path from 'path';
+import * as _ from 'lodash';
+import * as fs from 'fs';
+import * as fse from 'fs-extra';
+
+import * as mysql from 'mysql';
+
+const pool = mysql.createPool({
+  connectionLimit: 10,
+  host: 'localhost',
+  user: 'root',
+  password: '043789124',
+  database: 'smart_claim',
+  multipleStatements: true
+});
+
+interface IFile {
+  name?: string;
+}
+
+const fileZip = 'uploads/zip/ECLAIM_11053_20170201085741.zip-1488956515724.zip';
+
+// var zip = new require('node-zip')(data, {base64: false, checkCRC32: true});
+const zip = new AdmZip(fileZip);
+const zipEntries = zip.getEntries();
+const extractPath = 'uploads/extract';
+fse.ensureDirSync(extractPath);
+
+let files = {
+  pat: null,
+  idx: null
+};
+// console.log(zipEntries);
+zipEntries.forEach((v: IZipEntry) => {
+  let fileName = path.basename(v.entryName);
+  let txtFile = path.extname(v.entryName);
+  // console.log(fileName)
+  if (!_.startsWith(fileName, '.') && txtFile.toLowerCase() === '.txt' && fileName.toLowerCase() === 'pat.txt') {
+    let filePath = path.join(extractPath, v.entryName);
+    files.pat = filePath
+  }
+  if (!_.startsWith(fileName, '.') && txtFile.toLowerCase() === '.txt' && fileName.toLowerCase() === 'idx.txt') {
+    let filePath = path.join(extractPath, v.entryName);
+    files.idx = filePath
+  }
+});
+
+console.log(files);
+zip.extractAllTo(extractPath);
+
+var sqlPat = `LOAD DATA LOCAL INFILE ? REPLACE INTO TABLE pat FIELDS
+        TERMINATED BY "|" LINES TERMINATED BY "\n"
+        (HCODE, HN, CHANGWAT, AMPHUR, @DOB, SEX, MARRIAGE,
+        OCCUPA, NATION, PERSON_ID, NAMEPAT, TITLE, FNAME, LNAME,
+        IDTYPE) SET DOB=STR_TO_DATE(@DOB, "%Y%m%d%")`;
+
+var sqlIdx = `LOAD DATA LOCAL INFILE ? REPLACE INTO TABLE idx FIELDS
+        TERMINATED BY "|" LINES TERMINATED BY "\n"
+        (AN, DIAG, DXTYPE, DRDX)`;
+
+pool.getConnection((err, connection) => {
+  // connection.query(sql, [files.pat], (err, result) => {
+  //   if (err) console.log(err);
+  //   else console.log('Success');
+  // });
+
+  connection.beginTransaction(function (err) {
+    if (err) { throw err; }
+    connection.query(sqlPat, [files.pat], function (error, results, fields) {
+      if (error) {
+        return connection.rollback(function () {
+          throw error;
+        });
+      }
+
+      connection.query(sqlIdx, [files.idx], function (error, results, fields) {
+        if (error) {
+          return connection.rollback(function () {
+            throw error;
+          });
+        }
+        connection.commit(function (err) {
+          if (err) {
+            return connection.rollback(function () {
+              throw err;
+            });
+          }
+          console.log('success!');
+        });
+      });
+    });
+  });
+
+});
+// zip.extractAllTo('uploads/extract', true);

@@ -7,12 +7,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as moment from 'moment';
 import * as fse from 'fs-extra';
-import * as pdf from 'html-pdf';
-import * as gulp from 'gulp';
-import * as gulpData from 'gulp-data';
-import * as gulpPug from 'gulp-pug';
 import * as rimraf from 'rimraf';
-import * as json2xls from 'json2xls';
 
 import { unitOfTime } from 'moment';
 

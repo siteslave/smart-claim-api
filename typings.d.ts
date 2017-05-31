@@ -1,9 +1,6 @@
-// Type definitions for multer
-// Project: https://github.com/expressjs/multer
-// Definitions by: jt000 <https://github.com/jt000>, vilicvane <https://vilic.github.io/>, David Broder-Rodgers <https://github.com/DavidBR-SW>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 import express = require('express');
+import Knex = require('knex');
 
 declare namespace multer {
     interface Field {
@@ -86,13 +83,12 @@ declare global {
         export interface Request {
             file: Multer.File;
             files: Multer.File[];
-            dbHOS: string;
-            dbHDC: string;
-            decoded: any
+            db: Knex;
+            decoded: any // jwt decoded
         }
 
         export interface Response {
-            xls: any
+            xls: any // xls middleware
         }
 
         namespace Multer {

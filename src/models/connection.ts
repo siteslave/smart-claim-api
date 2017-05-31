@@ -7,7 +7,7 @@ export class Connection {
       let config = {
         host: process.env.DB_HOST || 'localhost',
         port: process.env.DB_PORT || 3306,
-        database: process.env.DB_NAME || 'iattendances',
+        database: process.env.DB_NAME || 'smart_claim',
         user: process.env.DB_USER || 'root',
         password: process.env.DB_PASSWORD || ''
       }
