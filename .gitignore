@@ -7,3 +7,5 @@ bower_components/*
 .env
 uploads
 app/*
+
+package-lock.json

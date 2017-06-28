@@ -23,7 +23,7 @@ const app: express.Express = express();
 
 //view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+// app.set('view engine', 'pug');
 
 //uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname,'public','favicon.ico')));
@@ -31,7 +31,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 // upload directory
@@ -69,7 +69,7 @@ let authClaim = (req, res, next) => {
 
 let connection: MySqlConnectionConfig = {
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  port: +process.env.DB_PORT,
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -92,7 +92,7 @@ app.use((req, res, next) => {
   next();
 });
 
-let authManager = (req, res, next) => {
+let auth = (req, res, next) => {
   let token: string = null;
 
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -105,13 +105,7 @@ let authManager = (req, res, next) => {
 
   jwt.verify(token)
     .then((decoded: any) => {
-      if (decoded.userType == '2') { // manager
-        req.decoded = decoded;
-        console.log(req.decoded);
-        next();
-      } else {
-        return res.send({ ok: false, error: 'Permission denied!' });
-      }
+      next();
     }, err => {
       return res.send({
         ok: false,
@@ -122,8 +116,8 @@ let authManager = (req, res, next) => {
 }
 
 app.use('/login', loginRoute);
-app.use('/manager', authManager, managerRoute);
-app.use('/claim-manager', authClaim, claimRoute);
+app.use('/manager', auth, managerRoute);
+app.use('/claim-manager', auth, claimRoute);
 // app.use('/', indexRoute);
 
 //catch 404 and forward to error handler

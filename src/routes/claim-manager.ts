@@ -1,4 +1,8 @@
-'use strict';
+
+import { OPDModel } from '../models/opd';
+import { IPDModel } from "../models/ipd";
+import { UCSModel } from '../models/ucs';
+import { OFCModel } from '../models/ofc';
 
 import * as express from 'express';
 import * as multer from 'multer';
@@ -8,19 +12,28 @@ import * as fs from 'fs';
 import * as moment from 'moment';
 import * as fse from 'fs-extra';
 import * as rimraf from 'rimraf';
+import * as wrap from 'co-express';
 
 import { IZipEntry } from 'adm-zip';
 import { unitOfTime } from 'moment';
-import { ImportData } from '../models/import';
-import { Importor } from '../models/importor';
+import {
+  Import16Files,
+  ImportOFCREPExcel,
+  ImportSSSREPText,
+  ImportUCREPExcel,
+  doImport16Files,
+  doImportOFCRep,
+  doImportSSSRep,
+  doImportUCSRep,
+  SaveLogs,
+  GetLogs
+} from '../models/importor';
 
-import { OPDModel } from '../models/opd';
-import { IPDModel } from "../models/ipd";
-
-const importData = new ImportData();
-const importor = new Importor();
+// const importor = new Importor();
 const opdModel = new OPDModel();
 const ipdModel = new IPDModel();
+const ucsModel = new UCSModel();
+const ofcModel = new OFCModel();
 
 const uploadedPath = path.join(__dirname, process.env.UPLOADED_PATH);
 const extractedPath = path.join(__dirname, process.env.EXTRACTED_PATH);
@@ -45,163 +58,130 @@ var upload = multer({ storage: storage })
 
 const router = express.Router();
 
-router.post('/upload', upload.single('files'), (req, res, next) => {
-  const filePath = req.file.path;
-  const fileName = req.file.originalname;
-  const fileType = req.body.fileType;
+router.post('/upload', upload.any(), (req, res, next) => {
   const db = req.db;
+  const files = req.files;
+  const fileType = req.body.fileType;
 
-  if (filePath) {
+  if (files.length) {
+
+    const filePath = null;//req.file.path;
+    const fileName = null;//req.file.originalname;
+
     if (fileType === '1') {
-      // ECLAIM_11053_20170428143716.zip
-      let chkFile = fileName.split('_');
-      let isZip = path.extname(fileName).toLowerCase() === '.zip';
-      if (chkFile[0].toUpperCase() === 'ECLAIM' && chkFile[0] === '11053' && isZip) {
-        importor.doImportF16(db, filePath)
+      let username = req.decoded.username;
+      try {
+        doImport16Files(req.db, files, username, fileType)
           .then(() => {
-            let username = req.decoded.username;
-            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
-            let data = {
-              filename: fileName,
-              filetype: fileType,
-              username: username,
-              uploaded_at: uploaded_at
-            };
-            return importor.saveLogs(db, data);
-          })
-          .then(() => {
-            rimraf.sync(filePath);
             res.send({ ok: true });
           })
-          .catch(err => {
-            console.log(err);
-            res.send({ ok: false, error: err });
-          })
-      } else {
-        res.send({ ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง' });
+          .catch(error => {
+            console.log(error);
+            res.send({ ok: false, error: error });
+          });
+      } catch (error) {
+        console.log(error);
+        res.send({ ok: false, error: error.message });
       }
     } else if (fileType === '2') { // UC REP
-      // rep eclaim
-      // eclaim_11053_IP_25600501_114105759
-      // eclaim_11053_OP_25600501_155047723
-      let chkFile = fileName.split('_');
-      let isExcel = path.extname(fileName).toLowerCase() === '.xls' || path.extname(fileName).toLowerCase() === '.xlsx';
-      if (chkFile[0].toUpperCase() === 'ECLAIM' && chkFile[1] === '11053' && (chkFile[2].toUpperCase() === 'IP' || chkFile[2].toUpperCase() === 'OP') && isExcel) {
-        importor.doImportUCREPExcel(db, filePath)
+      let username = req.decoded.username;
+      try {
+        doImportUCSRep(req.db, files, username, fileType)
           .then(() => {
-            let username = req.decoded.username;
-            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
-            let data = {
-              filename: fileName,
-              filetype: fileType,
-              username: username,
-              uploaded_at: uploaded_at
-            };
-            return importor.saveLogs(db, data);
-          })
-          .then(() => {
-            rimraf.sync(filePath);
             res.send({ ok: true });
           })
           .catch(error => {
             console.log(error);
             res.send({ ok: false, error: error });
           });
-
-      } else {
-        res.send({ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง'})
+      } catch (error) {
+        console.log(error);
+        res.send({ ok: false, error: error.message });
       }
+
     } else if (fileType === '3') { // OFC REP
-      // rep eclaim
-      // check file format 
-      // eclaim_11053_IPCS_25600504_102019838 => IPD
-      // eclaim_11053_OPCS_25600505_092457910 => OPD
-      let chkFile = fileName.split('_');
-      let isExcel = path.extname(fileName).toLowerCase() === '.xls' || path.extname(fileName).toLowerCase() === '.xlsx';
-      console.log(isExcel);
-      console.log(chkFile);
-      if (chkFile[0].toUpperCase() === 'ECLAIM' && chkFile[1] === '11053' && (chkFile[2].toUpperCase() === 'IPCS' || chkFile[2].toUpperCase() === 'OPCS' || chkFile[2].toUpperCase() === 'IPLGO' || chkFile[2].toUpperCase() === 'OPLGO') && isExcel) {
-        importor.doImportOFCREPExcel(db, filePath)
+      let username = req.decoded.username;
+
+      try {
+        doImportOFCRep(req.db, files, username, fileType)
           .then(() => {
-            let username = req.decoded.username;
-            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
-            let data = {
-              filename: fileName,
-              filetype: fileType,
-              username: username,
-              uploaded_at: uploaded_at
-            };
-            return importor.saveLogs(db, data);
-          })
-          .then(() => {
-            rimraf.sync(filePath);
             res.send({ ok: true });
           })
           .catch(error => {
             console.log(error);
             res.send({ ok: false, error: error });
           });
-      } else {
-        res.send({ ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง' })
+      } catch (error) {
+        console.log(error);
+        res.send({ ok: false, error: error.message });
       }
     } else if (fileType === '4') { // SSS
-      let chkFile = fileName.split('_');
-      let isText = path.extname(fileName).toLowerCase() === '.zip';
-      if (chkFile[0] === '11053' && chkFile[1].toUpperCase() === 'SIGNREP' && isText) {
-        importor.doImportSSSREPText(db, filePath)
+      let username = req.decoded.username;
+      try {
+        doImportSSSRep(req.db, files, username, fileType)
           .then(() => {
-            let username = req.decoded.username;
-            let uploaded_at = moment().format('YYYY-MM-DD HH:mm:ss');
-            let data = {
-              filename: fileName,
-              filetype: fileType,
-              username: username,
-              uploaded_at: uploaded_at
-            };
-            return importor.saveLogs(db, data);
-          })
-          .then(() => {
-            rimraf.sync(filePath);
             res.send({ ok: true });
           })
           .catch(error => {
             console.log(error);
             res.send({ ok: false, error: error });
           });
-      } else {
-        res.send({ ok: false, error: 'รูปแบบไฟล์ไม่ถูกต้อง' })
+      } catch (error) {
+        console.log(error);
+        res.send({ ok: false, error: error.message });
       }
+
     } else {
       res.send({ ok: false, error: 'กรุณาเลือกประเภทไฟล์ที่ต้องการอัปโหลด' })
     }
+
   } else {
-    res.send({ ok: false, error: 'ไม่พบไฟล์ที่ต้องการอัปโหลด' });
+    res.send({ ok: false, error: 'ไม่พบไฟล์ที่ต้องการนำเข้าข้อมูล' })
   }
 
 });
 
-router.get('/imports/logs', (req, res, next) => {
+router.get('/imports/logs', wrap(async(req, res, next) => {
   let db = req.db;
-  importor.getLogs(db)
-    .then((rows) => {
-      res.send({ ok: true, rows: rows });
-    })
-    .catch(err => {
-      console.log(err);
-      res.send({ ok: false, error: err });
-    })
-});
+  try {
+    let rows = await GetLogs(db);
+    res.send({ ok: true, rows: rows });
+  } catch (error) {
+    console.log(error);
+      res.send({ ok: false, erroror: error });
+  }
+}));
 
-router.post('/ipd/not-send', (req, res, next) => {
+router.post('/ofc/not-send', wrap(async (req, res, next) => {
   let db = req.db;
   let start = req.body.start;
   let end = req.body.end;
+  let type = req.body.type;
+  let rows = [];
+  let data = [];
 
-  ipdModel.getNotSend(db, start, end)
-    .then((rows) => {
-      const _rows = rows[0];
-      let data: any = [];
-      _rows.forEach(v => {
+  try {
+
+    if (type === 'OP') {
+      rows = await ofcModel.getNotSendOpd(db, start, end);
+      rows[0].forEach(v => {
+        let obj: any = {};
+        obj.seq = v.SEQ;
+        obj.an = null;
+        obj.hn = v.HN;
+        obj.ptname = `${v.TITLE}${v.FNAME}  ${v.LNAME}`;
+        obj.date_serv = `${moment(v.DATEOPD).format('DD/MM')}/${moment(v.DATEOPD).get('year') + 543}`;
+        obj.time_serv = moment(v.TIMEOPD, 'HHmm').format('HH:mm');
+        obj.dchdate = null;
+        obj.dchtime = null;
+        obj.inscl = v.INSCL;
+        obj.total_late = v.total_late;
+        obj.total_price = v.total_price;
+        data.push(obj);
+      });
+    } else {
+      rows = await ofcModel.getNotSendIpd(db, start, end);
+      rows[0].forEach(v => {
         let obj: any = {};
         obj.an = v.AN;
         obj.hn = v.HN;
@@ -213,12 +193,65 @@ router.post('/ipd/not-send', (req, res, next) => {
         obj.total_price = v.total_price;
         data.push(obj);
       });
-      res.send({ ok: true, rows: data })
-    })
-    .catch((error) => {
-      console.log(error);
-      res.send({ ok: false, error: error });
-    });
-});
+    }
+
+    res.send({ ok: true, rows: data });
+
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  }
+
+}));
+
+router.post('/ucs/not-send', wrap(async (req, res, next) => {
+  let db = req.db;
+  let start = req.body.start;
+  let end = req.body.end;
+  let type = req.body.type;
+  let rows = [];
+  let data = [];
+
+  try {
+
+    if (type === 'OP') {
+      rows = await ucsModel.getNotSendOpd(db, start, end);
+      rows[0].forEach(v => {
+        let obj: any = {};
+        obj.seq = v.SEQ;
+        obj.an = null;
+        obj.hn = v.HN;
+        obj.ptname = `${v.TITLE}${v.FNAME}  ${v.LNAME}`;
+        obj.date_serv = `${moment(v.DATEOPD).format('DD/MM')}/${moment(v.DATEOPD).get('year') + 543}`;
+        obj.time_serv = moment(v.TIMEOPD, 'HHmm').format('HH:mm');
+        obj.dchdate = null;
+        obj.dchtime = null;
+        obj.inscl = v.INSCL;
+        obj.total_late = v.total_late;
+        obj.total_price = v.total_price;
+        data.push(obj);
+      });
+    } else {
+      rows = await ucsModel.getNotSendIpd(db, start, end);
+      rows[0].forEach(v => {
+        let obj: any = {};
+        obj.an = v.AN;
+        obj.hn = v.HN;
+        obj.ptname = `${v.TITLE}${v.FNAME}  ${v.LNAME}`;
+        obj.dchdate = `${moment(v.DATEDSC).format('DD/MM')}/${moment(v.DATEDSC).get('year') + 543}`;
+        obj.dchtime = moment(v.TIMEDSC, 'HHmm').format('HH:mm');
+        obj.inscl = v.INSCL;
+        obj.total_late = v.total_late;
+        obj.total_price = v.total_price;
+        data.push(obj);
+      });
+    }
+
+    res.send({ ok: true, rows: data });
+
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  }
+
+}));
 
 export default router;
