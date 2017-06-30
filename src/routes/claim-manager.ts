@@ -141,29 +141,88 @@ router.post('/upload', upload.any(), (req, res, next) => {
 
 });
 
-router.get('/imports/logs', wrap(async(req, res, next) => {
+router.get('/imports/logs', wrap(async (req, res, next) => {
   let db = req.db;
   try {
     let rows = await GetLogs(db);
     res.send({ ok: true, rows: rows });
   } catch (error) {
     console.log(error);
-      res.send({ ok: false, erroror: error });
+    res.send({ ok: false, erroror: error });
   }
 }));
 
-router.post('/ofc/not-send', wrap(async (req, res, next) => {
+// router.post('/ofc/not-send', wrap(async (req, res, next) => {
+//   let db = req.db;
+//   let start = req.body.start;
+//   let end = req.body.end;
+//   let type = req.body.type;
+//   let rows = [];
+//   let data = [];
+
+//   try {
+
+//     if (type === 'OP') {
+//       rows = await ofcModel.getNotSendOpd(db, start, end);
+//       rows[0].forEach(v => {
+//         let obj: any = {};
+//         obj.seq = v.SEQ;
+//         obj.an = null;
+//         obj.hn = v.HN;
+//         obj.ptname = `${v.TITLE}${v.FNAME}  ${v.LNAME}`;
+//         obj.date_serv = `${moment(v.DATEOPD).format('DD/MM')}/${moment(v.DATEOPD).get('year') + 543}`;
+//         obj.time_serv = moment(v.TIMEOPD, 'HHmm').format('HH:mm');
+//         obj.dchdate = null;
+//         obj.dchtime = null;
+//         obj.inscl = v.INSCL;
+//         obj.total_late = v.total_late;
+//         obj.total_price = v.total_price;
+//         data.push(obj);
+//       });
+//     } else {
+//       rows = await ofcModel.getNotSendIpd(db, start, end);
+//       rows[0].forEach(v => {
+//         let obj: any = {};
+//         obj.an = v.AN;
+//         obj.hn = v.HN;
+//         obj.ptname = `${v.TITLE}${v.FNAME}  ${v.LNAME}`;
+//         obj.dchdate = `${moment(v.DATEDSC).format('DD/MM')}/${moment(v.DATEDSC).get('year') + 543}`;
+//         obj.dchtime = moment(v.TIMEDSC, 'HHmm').format('HH:mm');
+//         obj.inscl = v.INSCL;
+//         obj.total_late = v.total_late;
+//         obj.total_price = v.total_price;
+//         data.push(obj);
+//       });
+//     }
+
+//     res.send({ ok: true, rows: data });
+
+//   } catch (error) {
+//     res.send({ ok: false, error: error.message });
+//   }
+
+// }));
+
+router.post('/not-send', wrap(async (req, res, next) => {
   let db = req.db;
   let start = req.body.start;
   let end = req.body.end;
   let type = req.body.type;
+  let right = req.body.right;
+
   let rows = [];
   let data = [];
 
   try {
-
     if (type === 'OP') {
-      rows = await ofcModel.getNotSendOpd(db, start, end);
+      if (right === 'UCS') {
+        rows = await ucsModel.getNotSendOpd(db, start, end);
+      } else if (right === 'OFC') {
+        rows = await ofcModel.getNotSendOpd(db, start, end);
+      } else if (right === 'SSS') {
+        rows = [];
+      }
+
       rows[0].forEach(v => {
         let obj: any = {};
         obj.seq = v.SEQ;
@@ -180,58 +239,13 @@ router.post('/ofc/not-send', wrap(async (req, res, next) => {
         data.push(obj);
       });
     } else {
-      rows = await ofcModel.getNotSendIpd(db, start, end);
-      rows[0].forEach(v => {
-        let obj: any = {};
-        obj.an = v.AN;
-        obj.hn = v.HN;
-        obj.ptname = `${v.TITLE}${v.FNAME}  ${v.LNAME}`;
-        obj.dchdate = `${moment(v.DATEDSC).format('DD/MM')}/${moment(v.DATEDSC).get('year') + 543}`;
-        obj.dchtime = moment(v.TIMEDSC, 'HHmm').format('HH:mm');
-        obj.inscl = v.INSCL;
-        obj.total_late = v.total_late;
-        obj.total_price = v.total_price;
-        data.push(obj);
-      });
-    }
-
-    res.send({ ok: true, rows: data });
-
-  } catch (error) {
-    res.send({ ok: false, error: error.message });
-  }
-
-}));
-
-router.post('/ucs/not-send', wrap(async (req, res, next) => {
-  let db = req.db;
-  let start = req.body.start;
-  let end = req.body.end;
-  let type = req.body.type;
-  let rows = [];
-  let data = [];
-
-  try {
-
-    if (type === 'OP') {
-      rows = await ucsModel.getNotSendOpd(db, start, end);
-      rows[0].forEach(v => {
-        let obj: any = {};
-        obj.seq = v.SEQ;
-        obj.an = null;
-        obj.hn = v.HN;
-        obj.ptname = `${v.TITLE}${v.FNAME}  ${v.LNAME}`;
-        obj.date_serv = `${moment(v.DATEOPD).format('DD/MM')}/${moment(v.DATEOPD).get('year') + 543}`;
-        obj.time_serv = moment(v.TIMEOPD, 'HHmm').format('HH:mm');
-        obj.dchdate = null;
-        obj.dchtime = null;
-        obj.inscl = v.INSCL;
-        obj.total_late = v.total_late;
-        obj.total_price = v.total_price;
-        data.push(obj);
-      });
-    } else {
-      rows = await ucsModel.getNotSendIpd(db, start, end);
+      if (right === 'UCS') {
+        rows = await ucsModel.getNotSendIpd(db, start, end);
+      } else if (right === 'OFC') {
+        rows = await ofcModel.getNotSendIpd(db, start, end);
+      } else if (right === 'SSS') {
+        rows = [];
+      }
       rows[0].forEach(v => {
         let obj: any = {};
         obj.an = v.AN;

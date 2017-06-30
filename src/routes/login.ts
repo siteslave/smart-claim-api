@@ -50,13 +50,13 @@ router.post('/', wrap(async (req, res, next) => {
         const token = jwt.sign(payload);
         res.send({ ok: true, token: token })
       } else {
-        res.send({ ok: false, message: 'ชื่อผู้ใช้งานหรือรหัสผ่าน ไม่ถูกต้อง' })
+        res.send({ ok: false, error: 'ชื่อผู้ใช้งานหรือรหัสผ่าน ไม่ถูกต้อง' })
       }
     } catch (error) {
       res.send({ ok: false, error: error.message });
     }
   } else {
-    res.send({ ok: false, message: 'กรุณาระบุชื่อผู้ใช้งานและรหัสผ่าน' })
+    res.send({ ok: false, error: 'กรุณาระบุชื่อผู้ใช้งานและรหัสผ่าน' })
   }
 }));
 
