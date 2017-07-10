@@ -33,7 +33,7 @@ export class UCSModel {
       from opd as o
       inner join pat as p on p.HN=o.HN
       inner join ins on ins.SEQ=o.SEQ
-      inner join cht as ct on ct.SEQ=o.SEQ and ct.TOTAL>=50
+      inner join cht as ct on ct.SEQ=o.SEQ and ct.TOTAL>0
       left join eclaim_ucs as e on e.hn=o.HN and e.date_serv=o.DATEOPD and date_format(e.time_serv, '%H%i')=o.TIMEOPD
       where o.DATEOPD between ? and ?
       and ins.INSCL='UCS'
@@ -44,4 +44,91 @@ export class UCSModel {
 
     return db.raw(sql, [start, end, hospcode])
   }
+
+  getClaimTotal(db: Knex, start, end) {
+    let sql = `select DATE_FORMAT(u.date_serv, '%Y-%m') as date_serv, sum(u.charge_total) as total
+              from eclaim_ucs as u
+              where u.date_serv between ? and ?
+              and u.service_type='IP'
+              and (u.error_code='-' or u.error_code is null)
+              group by DATE_FORMAT(u.date_serv, '%Y-%m')
+              `;
+    return db.raw(sql, start, end)
+  }
+
+  getClaimSummaryOpd(db: Knex, start: any, end: any) {
+    console.log(start, end);
+    let sql = `
+    select DATE_FORMAT(e.date_serv, '%Y-%m') as date_serv, sum(e.charge_total) as total
+    from eclaim_ucs as e
+    where e.date_serv between ? and ?
+    and e.service_type='OP'
+    group by DATE_FORMAT(e.date_serv, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getClaimSummaryIpd(db: Knex, start: any, end: any) {
+    console.log(start, end);
+    let sql = `
+    select DATE_FORMAT(e.date_dch, '%Y-%m') as date_serv, sum(e.charge_total) as total
+    from eclaim_ucs as e
+    where e.date_dch between ? and ?
+    and e.service_type='IP'
+    group by DATE_FORMAT(e.date_dch, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getTotalIpdAdmit(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(i.DATEDSC, '%Y-%m') as date_serv, count(*) as total
+    from ipd as i
+    inner join ins as n on n.AN=i.AN and n.INSCL='UCS'
+    where i.DATEDSC between ? and ?
+    group by DATE_FORMAT(i.DATEDSC, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getTotalIpdClaim(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(e.date_dch, '%Y-%m') as date_serv, count(*) as total
+    from eclaim_ucs as e
+    where e.date_dch between ? and ?
+    and e.service_type='IP'
+    group by DATE_FORMAT(e.date_dch, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getTotalOpdService(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(o.DATEOPD, '%Y-%m') as date_serv, count(*) as total
+    from opd as o
+    inner join ins as n on n.HN=o.HN and n.SEQ=o.SEQ and n.INSCL='UCS'
+    where o.DATEOPD between ? and ?
+    group by DATE_FORMAT(o.DATEOPD, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getTotalOpdClaim(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(e.date_serv, '%Y-%m') as date_serv, count(*) as total
+    from eclaim_ucs as e
+    where e.date_serv between ? and ?
+    and e.service_type='OP'
+    group by DATE_FORMAT(e.date_serv, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  
 }

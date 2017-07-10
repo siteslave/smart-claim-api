@@ -79,7 +79,8 @@ let connection: MySqlConnectionConfig = {
 let db = Knex({
   client: 'mysql',
   connection: connection,
-  pool: { min: 0, max: 10 }
+  pool: { min: 0, max: 10 },
+  debug: true
 });
 
 app.use((req, res, next) => {
@@ -105,6 +106,8 @@ let auth = (req, res, next) => {
 
   jwt.verify(token)
     .then((decoded: any) => {
+      req.decoded = decoded;
+      console.log(req.decoded);
       next();
     }, err => {
       return res.send({

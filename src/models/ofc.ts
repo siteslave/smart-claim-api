@@ -2,6 +2,54 @@ import Knex = require('knex');
 import 'rxjs/add/operator/toPromise';
 
 export class OFCModel {
+  getTotalIpdAdmit(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(i.DATEDSC, '%Y-%m') as date_serv, count(*) as total
+    from ipd as i
+    inner join ins as n on n.AN=i.AN and n.INSCL='OFC'
+    where i.DATEDSC between ? and ?
+    group by DATE_FORMAT(i.DATEDSC, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getTotalIpdClaim(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(e.date_dch, '%Y-%m') as date_serv, count(*) as total
+    from eclaim_ofc as e
+    where e.date_dch between ? and ?
+    and e.service_type='IP'
+    group by DATE_FORMAT(e.date_dch, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getTotalOpdService(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(o.DATEOPD, '%Y-%m') as date_serv, count(*) as total
+    from opd as o
+    inner join ins as n on n.HN=o.HN and n.SEQ=o.SEQ and n.INSCL='OFC'
+    where o.DATEOPD between ? and ?
+    group by DATE_FORMAT(o.DATEOPD, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getTotalOpdClaim(db: Knex, start, end) {
+    let sql = `
+    select DATE_FORMAT(e.date_serv, '%Y-%m') as date_serv, count(*) as total
+    from eclaim_ofc as e
+    where e.date_serv between ? and ?
+    and e.service_type='OP'
+    group by DATE_FORMAT(e.date_serv, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
   getNotSendIpd(db: Knex, start, end) {
     let sql = `
       select i.HN, i.AN, p.TITLE, p.FNAME, p.LNAME, i.DATEDSC, i.TIMEDSC,
@@ -43,5 +91,31 @@ export class OFCModel {
     `;
 
     return db.raw(sql, [start, end, hospcode])
+  }
+
+  getClaimSummaryOpd(db: Knex, start: any, end: any) {
+    console.log(start, end);
+    let sql = `
+    select DATE_FORMAT(e.date_serv, '%Y-%m') as date_serv, sum(e.charge_total) as total
+    from eclaim_ofc as e
+    where e.date_serv between ? and ?
+    and e.service_type='OP'
+    group by DATE_FORMAT(e.date_serv, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
+  }
+
+  getClaimSummaryIpd(db: Knex, start: any, end: any) {
+    console.log(start, end);
+    let sql = `
+    select DATE_FORMAT(e.date_dch, '%Y-%m') as date_serv, sum(e.charge_total) as total
+    from eclaim_ofc as e
+    where e.date_dch between ? and ?
+    and e.service_type='IP'
+    group by DATE_FORMAT(e.date_dch, '%Y%m')
+    `;
+
+    return db.raw(sql, [start, end]);
   }
 }
