@@ -6,7 +6,7 @@ export class OFCModel {
     let sql = `
     select DATE_FORMAT(i.DATEDSC, '%Y-%m') as date_serv, count(*) as total
     from ipd as i
-    inner join ins as n on n.AN=i.AN and n.INSCL='OFC'
+    inner join ins as n on n.AN=i.AN and n.INSCL IN ('OFC', 'LGO')
     where i.DATEDSC between ? and ?
     group by DATE_FORMAT(i.DATEDSC, '%Y%m')
     `;
@@ -30,7 +30,7 @@ export class OFCModel {
     let sql = `
     select DATE_FORMAT(o.DATEOPD, '%Y-%m') as date_serv, count(*) as total
     from opd as o
-    inner join ins as n on n.HN=o.HN and n.SEQ=o.SEQ and n.INSCL='OFC'
+    inner join ins as n on n.HN=o.HN and n.SEQ=o.SEQ and n.INSCL IN ('OFC', 'LGO')
     where o.DATEOPD between ? and ?
     group by DATE_FORMAT(o.DATEOPD, '%Y%m')
     `;
@@ -60,7 +60,7 @@ export class OFCModel {
       left join ins on ins.AN=i.AN
       left join cht as ct on ct.AN=i.AN
       where i.DATEDSC between ? and ?
-      and ins.INSCL='OFC'
+      and ins.INSCL IN ('OFC', 'LGO')
       and (i.an not in (
         select distinct an
         from eclaim_ofc
@@ -84,7 +84,7 @@ export class OFCModel {
       inner join cht as ct on ct.SEQ=o.SEQ and ct.TOTAL>=50
       left join eclaim_ofc as e on e.hn=o.HN and e.date_serv=o.DATEOPD and date_format(e.time_serv, '%H%i')=o.TIMEOPD
       where o.DATEOPD between ? and ?
-      and ins.INSCL='OFC'
+      and ins.INSCL IN ('OFC', 'LGO')
       and ins.HOSPMAIN<>?
 	    and e.rep_no is null
       order by total_late DESC
