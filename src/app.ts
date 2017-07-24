@@ -36,7 +36,9 @@ app.use(cors());
 
 // upload directory
 const uploadedPath = path.join(__dirname, process.env.UPLOADED_PATH);
+const extractedPath = path.join(__dirname, process.env.EXTRACTED_PATH);
 fse.ensureDirSync(uploadedPath);
+fse.ensureDirSync(extractedPath);
 
 let authClaim = (req, res, next) => {
   let token: string = null;
