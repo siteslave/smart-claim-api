@@ -112,10 +112,11 @@ export class UCSModel {
     from opd as o
     inner join ins as n on n.HN=o.HN and n.SEQ=o.SEQ and n.INSCL='UCS'
     where o.DATEOPD between ? and ?
+    and n.HOSPMAIN<>?
     group by DATE_FORMAT(o.DATEOPD, '%Y%m')
     `;
 
-    return db.raw(sql, [start, end]);
+    return db.raw(sql, [start, end, process.env.HOSPCODE]);
   }
 
   getTotalOpdClaim(db: Knex, start, end) {
